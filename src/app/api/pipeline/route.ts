@@ -4,12 +4,28 @@ import { getFlightRecommendation } from "./steps/recoFlight";
 import { getHotelRecommendations } from "./steps/recoHotel";
 import { getCarRentalRecommendation } from "./steps/recoCarRental";
 import { generateFlightSchedule } from "./steps/generateFlightSchedule";
+import { getLatestFormId } from "@/lib/db-helpers";
 
 export async function POST(request: Request) {
   try {
     // Parse and validate holistic data input
     const body = await request.json();
-    const holisticData = HolisticDataSchema.parse(body);
+
+    // Get formId from latest form record if not provided
+    let formId: number = body.formId;
+    if (!formId) {
+      formId = await getLatestFormId();
+      console.log(`Using latest form ID: ${formId}`);
+    } else {
+      // Ensure formId is a number (convert if it's a string)
+      formId = typeof formId === "string" ? parseInt(formId, 10) : formId;
+    }
+
+    // Add formId to body before parsing
+    const holisticData = HolisticDataSchema.parse({
+      ...body,
+      formId,
+    });
 
     // Check for API key
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -49,10 +65,14 @@ export async function POST(request: Request) {
       input: holisticData,
       output: {
         flight: {
-          route: flight.route,
-          departure: flight.departure_time,
-          arrival: flight.arrival_time,
-          flight_number: flight.flight_number,
+          id: flight.id,
+          origin_country: flight.origin_country,
+          origin_airport: flight.origin_airport,
+          destination_country: flight.destination_country,
+          destination_airport: flight.destination_airport,
+          departure_time: flight.departure_time,
+          arrival_time: flight.arrival_time,
+          duration: flight.duration,
         },
         hotels: hotels,
         car_rental: carRental,

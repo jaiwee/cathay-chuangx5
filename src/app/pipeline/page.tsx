@@ -28,10 +28,19 @@ type PipelineInput = {
 };
 
 type PipelineOutput = {
-  route: string;
-  departure: string;
-  arrival: string;
-  flight_number: string;
+  flight: {
+    id?: string;
+    origin_country: string;
+    origin_airport: string;
+    destination_country: string;
+    destination_airport: string;
+    departure_time: string;
+    arrival_time: string;
+    duration: number;
+  };
+  hotels?: unknown[];
+  car_rental?: unknown;
+  flight_schedule?: unknown;
 };
 
 export default function PipelinePage() {
@@ -304,7 +313,14 @@ export default function PipelinePage() {
                 <div className="space-y-4">
                   <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border">
                     <p className="text-sm text-muted-foreground mb-1">Route</p>
-                    <p className="font-semibold text-lg">{result.route}</p>
+                    <p className="font-semibold text-lg">
+                      {result.flight.origin_airport} →{" "}
+                      {result.flight.destination_airport}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {result.flight.origin_country} to{" "}
+                      {result.flight.destination_country}
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -312,23 +328,29 @@ export default function PipelinePage() {
                       <p className="text-sm text-muted-foreground mb-1">
                         Departure
                       </p>
-                      <p className="font-semibold">{result.departure}</p>
+                      <p className="font-semibold">
+                        {result.flight.departure_time}
+                      </p>
                     </div>
 
                     <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border">
                       <p className="text-sm text-muted-foreground mb-1">
                         Arrival
                       </p>
-                      <p className="font-semibold">{result.arrival}</p>
+                      <p className="font-semibold">
+                        {result.flight.arrival_time}
+                      </p>
                     </div>
                   </div>
 
                   <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border">
                     <p className="text-sm text-muted-foreground mb-1">
-                      Flight Number
+                      Duration
                     </p>
                     <p className="font-semibold text-lg">
-                      {result.flight_number}
+                      {result.flight.duration} minutes (
+                      {Math.floor(result.flight.duration / 60)}h{" "}
+                      {result.flight.duration % 60}m)
                     </p>
                   </div>
                 </div>
