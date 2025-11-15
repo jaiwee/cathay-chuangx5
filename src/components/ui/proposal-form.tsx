@@ -219,7 +219,7 @@ export function ProposalForm() {
 
   return (
     <div className="w-full h-full bg-white flex flex-col overflow-hidden">
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <h1 className="mb-6 text-3xl font-bold text-gray-800">Flight Itinerary</h1>
         
         <div className="mb-8 space-y-1 text-sm font-normal text-gray-800">
@@ -237,7 +237,7 @@ export function ProposalForm() {
         {/* Flight Timeline */}
         <div className="relative flex flex-1 items-center px-6">
           {/* Airplane Icon */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Plane className="h-6 w-6 text-gray-300" strokeWidth={1.5} />
           </div>
 
@@ -257,7 +257,7 @@ export function ProposalForm() {
           </div>
 
           {/* End Circle */}
-          <div className="flex-shrink-0 h-2 w-2 rounded-full border border-gray-300 bg-white"></div>
+          <div className="shrink-0 h-2 w-2 rounded-full border border-gray-300 bg-white"></div>
         </div>
 
         {/* Arrival Time */}
