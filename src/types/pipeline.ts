@@ -14,6 +14,9 @@ export const HolisticDataSchema = z.object({
   destination_country: z.string(),
   flight_timing_preference: z.enum(['morning', 'afternoon', 'evening']),
   group_size: z.number(),
+  hasEntertainment: z.boolean().default(true),
+  hasCulinary: z.boolean().default(true),
+  hasActivities: z.boolean().default(true),
 })
 
 export type HolisticData = z.infer<typeof HolisticDataSchema>
@@ -66,10 +69,44 @@ export const CarRentalRecommendationSchema = z.object({
 
 export type CarRentalRecommendation = z.infer<typeof CarRentalRecommendationSchema>
 
+// Flight activity (mock data)
+export interface FlightActivity {
+  name: string
+  duration: string // e.g., "30 minutes"
+  description: string
+  cathay_shop_items: string[] // merchandise to promote
+}
+
+// Flight schedule recommendation output
+export const FlightScheduleSchema = z.object({
+  theme_description: z.string().describe('Overall theme description for the flight'),
+  meals: z.array(z.object({
+    timing: z.string().describe('When the meal is served (e.g., "1 hour after takeoff")'),
+    name: z.string().describe('Name of the meal'),
+    description: z.string().describe('Description of the meal and its cultural significance'),
+    destination_inspired: z.boolean().describe('Whether this meal is inspired by destination country'),
+  })),
+  activities: z.array(z.object({
+    name: z.string().describe('Activity name'),
+    start_time: z.string().describe('When the activity starts (e.g., "2 hours after takeoff" or "10:30 AM")'),
+    end_time: z.string().describe('When the activity ends (e.g., "2.5 hours after takeoff" or "11:00 AM")'),
+    duration: z.string().describe('Duration of activity'),
+    description: z.string().describe('Activity description'),
+    cathay_shop_items: z.array(z.string()).describe('Related merchandise'),
+  })),
+  entertainment: z.object({
+    description: z.string().describe('Entertainment offerings themed to the event'),
+    featured_content: z.array(z.string()).describe('Specific movies, shows, or music playlists'),
+  }).optional(),
+})
+
+export type FlightSchedule = z.infer<typeof FlightScheduleSchema>
+
 // Complete pipeline output
 export interface PipelineOutput {
   flight: FlightRecommendation
   hotels: HotelRecommendation[]
   car_rental: CarRentalRecommendation
+  flight_schedule: FlightSchedule
 }
 

@@ -61,3 +61,4 @@ IMPORTANT: Respond ONLY with valid JSON in this exact format (no markdown, no co
   // Validate the response against our schema
   return FlightRecommendationSchema.parse(parsedResponse);
 }
+

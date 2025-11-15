@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { HolisticDataSchema } from "@/types/pipeline";
-import { getFlightRecommendation } from "./steps/flight";
-import { getHotelRecommendations } from "./steps/hotel";
-import { getCarRentalRecommendation } from "./steps/carrental";
+import { getFlightRecommendation } from "./steps/recoFlight";
+import { getHotelRecommendations } from "./steps/recoHotel";
+import { getCarRentalRecommendation } from "./steps/recoCarRental";
+import { generateFlightSchedule } from "./steps/generateFlightSchedule";
 
 export async function POST(request: Request) {
   try {
@@ -37,6 +38,11 @@ export async function POST(request: Request) {
     const carRental = await getCarRentalRecommendation(holisticData, flight);
     console.log("Car rental recommendation:", carRental);
 
+    // Step 4: Generate themed flight schedule based on holistic data + flight details
+    console.log("Step 4: Generating themed flight schedule...");
+    const flightSchedule = await generateFlightSchedule(holisticData, flight);
+    console.log("Flight schedule:", flightSchedule);
+
     // Return the complete pipeline output
     return NextResponse.json({
       success: true,
@@ -50,6 +56,7 @@ export async function POST(request: Request) {
         },
         hotels: hotels,
         car_rental: carRental,
+        flight_schedule: flightSchedule,
       },
     });
   } catch (error: unknown) {

@@ -89,3 +89,4 @@ IMPORTANT: Respond ONLY with valid JSON in this exact format (no markdown, no co
   // Return the parsed hotels (validation can be added if needed)
   return parsedResponse as HotelRecommendation[];
 }
+
