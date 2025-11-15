@@ -73,10 +73,12 @@ export function AiChat({
       />
 
       <div className="mb-6 flex flex-col items-center gap-3">
-        <Sparkles className="h-6 w-6 text-zinc-700 dark:text-zinc-200" aria-hidden="true" />
-        <h2 className="text-xl md:text-2xl tracking-tight text-zinc-900 dark:text-zinc-100 text-center">
+        <Sparkles className="h-8 w-8 text-zinc-700 dark:text-zinc-200" aria-hidden="true" />
+        <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 py-2">
           {heading}
         </h2>
+        </div>
       </div>
       <ScrollArea className="flex-1 min-h-0">
         <div className="space-y-5 pr-8">
@@ -95,17 +97,17 @@ export function AiChat({
           placeholder={placeholder}
           aria-label="Message Catherine AI"
           disabled={isSending}
-          className="pr-12 text-sm border border-white dark:border-zinc-700 bg-white/50 dark:bg-zinc-900/50 rounded-md shadow-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="pr-14 py-5 px-4 text-lg font-medium border-2 border-gray-300 bg-white dark:bg-zinc-900 rounded-md shadow-md placeholder:text-gray-500 dark:placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300 focus-visible:outline-none"
         />
         <Button
           type="submit"
           size="sm"
           variant="ghost"
           disabled={isSending || !input.trim()}
-          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-700"
+          className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 text-white disabled:text-gray-500 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500"
           aria-label="Send"
         >
-          <SendHorizontal className="h-4 w-4 " />
+          <SendHorizontal className="h-5 w-5" />
         </Button>
       </form>
     </div>

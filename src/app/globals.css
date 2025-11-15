@@ -120,3 +120,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Override Radix UI ScrollArea Viewport default styles */
+[data-slot="scroll-area-viewport"] {
+  min-width: auto !important;
+  display: block !important;
+}
+
+/* Override nested div inside ScrollArea Viewport */
+[data-slot="scroll-area-viewport"] > div {
+  min-width: auto !important;
+  display: block !important;
+  width: 100% !important;
+}
