@@ -161,17 +161,23 @@ export function ProposalForm() {
   const [isLoadingActivities, setIsLoadingActivities] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showGenerating, setShowGenerating] = useState(false);
+  const [currentFormId, setCurrentFormId] = useState<number | null>(null);
 
-  // Fetch flight data from Supabase
+  // Fetch flight data from Supabase - get latest form by created_at
   useEffect(() => {
     async function fetchFlightData() {
       try {
-        // First, fetch form data to get origin_country, destination_country, and flight_id
+        console.log("Fetching latest form by created_at...");
+        
+        // Get the LATEST form by created_at timestamp
         const { data: formData, error: formError } = await supabase
           .from("form")
-          .select("origin_country, destination_country, flight_id")
+          .select("id, origin_country, destination_country, flight_id, created_at")
+          .order("created_at", { ascending: false })
           .limit(1)
           .single();
+
+        console.log("Latest form data:", formData);
 
         if (formError) {
           console.error("Error fetching form data:", formError);
@@ -185,12 +191,18 @@ export function ProposalForm() {
           return;
         }
 
+        // Store the current form ID for activities fetch
+        setCurrentFormId(formData.id);
+        console.log("Current form ID:", formData.id);
+
         // Then, fetch flight details using flight_id
         const { data: flightDetails, error: flightError } = await supabase
           .from("flight")
           .select("destination_airport, origin_airport, departure_time, arrival_time, flight_code, duration")
           .eq("id", formData.flight_id)
           .single();
+
+        console.log("Flight details:", flightDetails);
 
         if (flightError) {
           console.error("Error fetching flight details:", flightError);
@@ -222,17 +234,22 @@ export function ProposalForm() {
     fetchFlightData();
   }, []);
 
-  // Fetch activities from Supabase
+  // Fetch activities from Supabase - get all activities with current form_id
   useEffect(() => {
+    if (!currentFormId) return;
+
     async function fetchActivities() {
       try {
-        // Fetch activities and order by time field from database
+        console.log("Fetching activities for form_id:", currentFormId);
+
+        // Fetch all activities with the current form_id, ordered by start_time
         const { data, error } = await supabase
           .from("proposed_flight_activity")
           .select("*")
+          .eq("form_id", currentFormId)
           .order("start_time", { ascending: true, nullsFirst: false });
 
-        console.log("Activities fetch result:", { data, error });
+        console.log("Activities fetch result:", { data, error, count: data?.length });
 
         if (error) {
           console.error("Error fetching activities:", error);
@@ -241,7 +258,7 @@ export function ProposalForm() {
         }
 
         if (data && Array.isArray(data)) {
-          console.log("Activities data received:", data.length, "items");
+          console.log(`Activities data received: ${data.length} items for form_id ${currentFormId}`);
           
           // Map database fields to ActivityData format
           const mappedActivities: ActivityData[] = data.map((activity: ActivityFromDB) => {
@@ -286,7 +303,7 @@ export function ProposalForm() {
     }
 
     fetchActivities();
-  }, [flightData]);
+  }, [currentFormId, flightData]);
 
   // Get departure time from flight data
   const departureTime = flightData 

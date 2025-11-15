@@ -15,6 +15,8 @@ type CarRental = {
   price_per_day: number;
   booking_url: string;
   miles_eligible: boolean;
+  image_url?: string | null;
+  model_name: string;
 };
 
 type Hotel = {
@@ -26,6 +28,7 @@ type Hotel = {
   booking_url: string;
   price_per_night: number;
   amenities: string | string[] | null;
+  image_url?: string | null;
 };
 
 // Amenity icon mapping
@@ -198,6 +201,7 @@ export default function SmartRecommendationPage() {
     fetchHotels();
   }, [destinationCountry]);
 
+
   // Parse amenities string into array
   const parseAmenities = (amenitiesStr: string | string[] | null | undefined): { icon: React.ReactNode; label: string }[] => {
     if (!amenitiesStr) return [];
@@ -257,7 +261,17 @@ export default function SmartRecommendationPage() {
                     className="bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm"
                   >
                     <div className="relative h-48 bg-gray-200 dark:bg-zinc-800 flex items-center justify-center">
-                      <div className="text-gray-400 dark:text-gray-600 text-sm">Vehicle Image</div>
+                      {car.image_url ? (
+                        <Image
+                          src={car.image_url || ""}
+                          alt={car.model_name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="text-gray-400 dark:text-gray-600 text-sm">Vehicle Image</div>
+                      )}
                       {/* Powered by Hertz */}
                       <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-10">
                         <div className="bg-white/50 dark:bg-zinc-900/50 px-2 py-1 mb-1 rounded flex items-center gap-1.5">
@@ -283,7 +297,7 @@ export default function SmartRecommendationPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <h3 className="text-lg font-semibold text-gray-800 dark:text-white break-words">
-                            {car.provider_name}
+                            {car.model_name}
                           </h3>
                           <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 text-xs rounded break-words">
                             {car.service_type}
@@ -337,8 +351,17 @@ export default function SmartRecommendationPage() {
                       className="bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm"
                     >
                       <div className="relative h-48 bg-gray-200 dark:bg-zinc-800 flex items-center justify-center">
+                        {hotel.image_url ? (
+                        <Image
+                          src={hotel.image_url || ""}
+                          alt={hotel.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
                         <div className="text-gray-400 dark:text-gray-600 text-sm">Hotel Image</div>
-                        {/* Powered by Expedia */}
+                      )}{/* Powered by Expedia */}
                         <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-10">
                           <div className="bg-white/50 dark:bg-zinc-900/50 px-2 py-1 mb-1 rounded flex items-center gap-1.5">
                             <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">Powered by</span>

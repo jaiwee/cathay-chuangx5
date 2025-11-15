@@ -6,12 +6,6 @@ import { usePlanForm } from "@/hooks/usePlanForm";
 import { AiChat } from "@/components/ui/ai-chat";
 import { ProposalForm } from "@/components/ui/proposal-form";
 import Lottie from "lottie-react";
-import airplaneAnim from "@/public/animations/Flight.json";
-import foodAnim from "@/public/animations/Food.json";
-import hotelAnim from "@/public/animations/Home.json";
-import transportAnim from "@/public/animations/Car.json";
-import entertainmentAnim from "@/public/animations/Popcorn.json";
-import wineAnim from "@/public/animations/Wine.json";
 
 // Helper to normalize event_location to { country: string, address: string }
 function normalizeEventLocation(raw: any, fallbackCountry?: string) {
@@ -64,26 +58,56 @@ export default function ProposalFormPage() {
   const [stage, setStage] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [pipeline, setPipeline] = useState<any>(null);
+  const [anims, setAnims] = useState<null | {
+    airplane: any;
+    food: any;
+    hotel: any;
+    transport: any;
+    entertainment: any;
+    wine: any;
+  }>(null);
 
   const startedRef = useRef(false);
 
-  const stages = [
-    { data: airplaneAnim, label: "Planning your flights" },
-    { data: foodAnim, label: "Selecting dining experiences" },
-    { data: wineAnim, label: "Pairing wines and beverages" },
-    { data: entertainmentAnim, label: "Curating in-flight activities" },
-    { data: hotelAnim, label: "Finding accommodations" },
-    { data: transportAnim, label: "Arranging ground transport" },
-  ];
-
-  // Separate effect for animation cycling
+  // Load Lottie JSON from public folder
   useEffect(() => {
+    const loadAnimations = async () => {
+      try {
+        const [airplane, food, hotel, transport, entertainment, wine] = await Promise.all([
+          fetch("/animations/Flight.json").then((r) => r.json()),
+          fetch("/animations/Food.json").then((r) => r.json()),
+          fetch("/animations/Home.json").then((r) => r.json()),
+          fetch("/animations/Car.json").then((r) => r.json()),
+          fetch("/animations/Popcorn.json").then((r) => r.json()),
+          fetch("/animations/Wine.json").then((r) => r.json()),
+        ]);
+        setAnims({ airplane, food, hotel, transport, entertainment, wine });
+      } catch (e) {
+        console.error("Failed to load animations from /public:", e);
+      }
+    };
+    loadAnimations();
+  }, []);
+
+  const stages = anims
+    ? [
+        { data: anims.airplane, label: "Planning your flights" },
+        { data: anims.food, label: "Selecting dining experiences" },
+        { data: anims.wine, label: "Pairing wines and beverages" },
+        { data: anims.entertainment, label: "Curating in-flight activities" },
+        { data: anims.hotel, label: "Finding accommodations" },
+        { data: anims.transport, label: "Arranging ground transport" },
+      ]
+    : [];
+
+  // Cycle animations only after they are loaded
+  useEffect(() => {
+    if (!stages.length) return;
     const animId = setInterval(() => {
       setStage((s) => (s + 1) % stages.length);
     }, 5000);
-
     return () => clearInterval(animId);
-  }, []); // Empty deps - runs once on mount
+  }, [stages.length]);
 
   // Separate effect for API call
   useEffect(() => {
