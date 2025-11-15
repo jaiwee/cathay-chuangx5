@@ -7,6 +7,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - **Tailwind CSS** - Utility-first styling
 - **Shadcn UI** - Beautiful, accessible UI components
 - **Supabase** - Backend as a Service (Database, Auth, Storage)
+- **Vercel AI SDK** - LLM integration with Google Gemini
+- **Google Gemini 2.5 Flash** - AI-powered flight recommendations
 
 ## Getting Started
 
@@ -29,6 +31,11 @@ Get your Supabase URL and Anon Key from your [Supabase Dashboard](https://app.su
 2. Navigate to API section
 3. Copy the `URL` and `anon/public` key
 
+Get your Google Gemini API Key from [Google AI Studio](https://aistudio.google.com/app/apikey):
+1. Create an account or sign in
+2. Click "Get API key"
+3. Copy your API key
+
 ### 3. Run the Development Server
 
 ```bash
@@ -43,9 +50,22 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🤖 LLM Flight Pipeline
+Visit [http://localhost:3000/pipeline](http://localhost:3000/pipeline) to try the AI-powered flight recommendation system.
+
+**Input:**
+- Event details (theme, name, date, time, location)
+- Travel preferences (origin, destination, timing)
+- Group size
+
+**Output:**
+- Flight route (airports)
+- Departure and arrival times
+- Flight number
+
+See [PIPELINE_GUIDE.md](./PIPELINE_GUIDE.md) for detailed documentation.
 
 ## Learn More
 

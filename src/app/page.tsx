@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { SupabaseExample } from "@/components/supabase-example";
 
 export default function Home() {
   return (
@@ -15,38 +14,34 @@ export default function Home() {
         />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Next.js + Supabase + Shadcn UI
+            AI Flight Pipeline
           </h1>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Your project is ready! This starter includes Next.js 14 with TypeScript, 
-            Supabase for backend services, and Shadcn UI for beautiful components.
+            AI-powered flight recommendation system using Next.js, Google Gemini, and Shadcn UI.
           </p>
-          <SupabaseExample />
           <div className="w-full">
-            <h2 className="text-xl font-semibold mb-2 text-black dark:text-zinc-50">Next Steps:</h2>
+            <h2 className="text-xl font-semibold mb-2 text-black dark:text-zinc-50">Try the Pipeline:</h2>
             <ul className="list-disc list-inside text-zinc-600 dark:text-zinc-400 space-y-1">
-              <li>Configure your Supabase credentials in <code className="text-sm bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">.env.local</code></li>
-              <li>Install Shadcn components: <code className="text-sm bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">npx shadcn@latest add button</code></li>
-              <li>Start building your application!</li>
+              <li>Visit <a href="/pipeline" className="text-blue-600 dark:text-blue-400 hover:underline">/pipeline</a> to generate flight recommendations</li>
+              <li>Enter event details and travel preferences</li>
+              <li>Get AI-powered flight suggestions powered by Gemini 2.5 Flash</li>
             </ul>
           </div>
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://supabase.com/docs"
-            target="_blank"
-            rel="noopener noreferrer"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[200px]"
+            href="/pipeline"
           >
-            Supabase Docs
+            Try Flight Pipeline
           </a>
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://ui.shadcn.com"
+            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[200px]"
+            href="https://ai.google.dev/gemini-api/docs"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Shadcn UI
+            Gemini AI Docs
           </a>
         </div>
       </main>
