@@ -1,43 +1,14 @@
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
 import { NextResponse } from "next/server";
-import { z } from "zod";
-
-// Define the output schema
-const FlightRecommendationSchema = z.object({
-  route: z
-    .string()
-    .describe('Flight route in format "origin_airport to destination_airport"'),
-  departure_time: z
-    .string()
-    .describe("Departure time in ISO format or readable format"),
-  arrival_time: z
-    .string()
-    .describe("Arrival time in ISO format or readable format"),
-  flight_number: z.string().describe("Flight number (e.g., AA123, BA456)"),
-});
-
-// Define the input schema
-const PipelineInputSchema = z.object({
-  theme: z.enum(["sports", "music", "corporate"]),
-  event_name: z.string(),
-  event_date: z.string(),
-  event_time: z.string(),
-  event_location: z.object({
-    country: z.string(),
-    address: z.string(),
-  }),
-  origin_country: z.string(),
-  destination_country: z.string(),
-  flight_timing_preference: z.enum(["morning", "afternoon", "evening"]),
-  group_size: z.number(),
-});
+import { HolisticDataSchema } from "@/types/pipeline";
+import { getFlightRecommendation } from "./steps/flight";
+import { getHotelRecommendations } from "./steps/hotel";
+import { getCarRentalRecommendation } from "./steps/carrental";
 
 export async function POST(request: Request) {
   try {
-    // Parse and validate input
+    // Parse and validate holistic data input
     const body = await request.json();
-    const input = PipelineInputSchema.parse(body);
+    const holisticData = HolisticDataSchema.parse(body);
 
     // Check for API key
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -51,82 +22,60 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the prompt for the LLM
-    const prompt = `
-You are a travel planning assistant specializing in flight recommendations for events.
+    // Step 1: Get flight recommendation
+    console.log("Step 1: Getting flight recommendation...");
+    const flight = await getFlightRecommendation(holisticData);
+    console.log("Flight recommendation:", flight);
 
-Event Details:
-- Theme: ${input.theme}
-- Event Name: ${input.event_name}
-- Event Date: ${input.event_date}
-- Event Time: ${input.event_time}
-- Event Location: ${input.event_location.address}, ${input.event_location.country}
-- Origin Country: ${input.origin_country}
-- Destination Country: ${input.destination_country}
-- Flight Timing Preference: ${input.flight_timing_preference}
-- Group Size: ${input.group_size}
+    // Step 2: Get hotel recommendations based on holistic data + flight details
+    console.log("Step 2: Getting hotel recommendations...");
+    const hotels = await getHotelRecommendations(holisticData, flight);
+    console.log("Hotel recommendations:", hotels);
 
-Based on the above information, recommend a suitable flight. Consider:
-1. The flight timing preference (${input.flight_timing_preference})
-2. The event date and time to ensure timely arrival
-3. Major airports in ${input.origin_country} and ${input.destination_country}
-4. Realistic flight numbers and times
+    // Step 3: Get car rental recommendation based on holistic data + flight details
+    console.log("Step 3: Getting car rental recommendations...");
+    const carRental = await getCarRentalRecommendation(holisticData, flight);
+    console.log("Car rental recommendation:", carRental);
 
-IMPORTANT: Respond ONLY with valid JSON in this exact format (no markdown, no code blocks, no extra text):
-{
-  "route": "AIRPORT_CODE to AIRPORT_CODE",
-  "departure_time": "YYYY-MM-DD HH:MM AM/PM TIMEZONE",
-  "arrival_time": "YYYY-MM-DD HH:MM AM/PM TIMEZONE",
-  "flight_number": "XX123"
-}
-`;
-
-    // Generate text using Vercel AI SDK with Google Gemini
-    const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
-      prompt,
-    });
-
-    // Parse the JSON response
-    let parsedResponse;
-    try {
-      // Remove any markdown code blocks if present
-      const cleanedText = text
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "")
-        .trim();
-      parsedResponse = JSON.parse(cleanedText);
-    } catch (parseError) {
-      console.error("Failed to parse LLM response:", text);
-      throw new Error("LLM returned invalid JSON format");
-    }
-
-    // Validate the response against our schema
-    const object = FlightRecommendationSchema.parse(parsedResponse);
-
-    // Return the structured response
+    // Return the complete pipeline output
     return NextResponse.json({
       success: true,
-      input: input,
+      input: holisticData,
       output: {
-        route: object.route,
-        departure: object.departure_time,
-        arrival: object.arrival_time,
-        flight_number: object.flight_number,
+        flight: {
+          route: flight.route,
+          departure: flight.departure_time,
+          arrival: flight.arrival_time,
+          flight_number: flight.flight_number,
+        },
+        hotels: hotels,
+        car_rental: carRental,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Pipeline error:", error);
 
-    if (error.name === "ZodError") {
+    if (
+      error &&
+      typeof error === "object" &&
+      "name" in error &&
+      error.name === "ZodError" &&
+      "errors" in error
+    ) {
       return NextResponse.json(
-        { error: "Invalid input data", details: error.errors },
+        {
+          error: "Invalid input data",
+          details: error.errors,
+        },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: "Pipeline processing failed", message: error.message },
+      {
+        error: "Pipeline processing failed",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
