@@ -9,20 +9,26 @@ export default function CustomisationsPage() {
   const { form, update } = usePlanForm();
 
   return (
-    <div className="min-h-screen w-full flex flex-col px-16 py-12">
-      {/* Progress Bar */}
-      <ProgressBar currentStep={4} />
+    <div className="min-h-screen w-full flex flex-col px-20 py-8">
+      {/* Top Progress Bar */}
+      <div className="mb-8">
+        <ProgressBar currentStep={4} />
+      </div>
 
-      <div className="max-w-xl mt-12">
-        <h1 className="text-[32px] font-semibold text-gray-900">
-          What inflight customisation do you want?
-        </h1>
-        <p className="mt-3 text-gray-600 text-lg leading-relaxed">
-          Personalise your experience with curated options from Cathay Shop.
-        </p>
+      {/* Main layout */}
+      <div className="grid grid-cols-2 gap-10 px-8 py-8">
+        {/* LEFT SIDE */}
+        <div className="flex flex-col justify-start pt-10">
+          <h1 className="text-[36px] font-semibold text-gray-900">
+            Inflight Customisations
+          </h1>
+          <p className="mt-4 text-gray-600 text-lg leading-relaxed max-w-md">
+            Personalise your experience with curated options from Cathay Shop.
+          </p>
+        </div>
 
-        <div className="flex flex-col gap-6 mt-10">
-
+        {/* RIGHT SIDE */}
+        <div className="flex flex-col gap-6">
           {/* Entertainment */}
           <div
             onClick={() => update({ hasEntertainment: !form.hasEntertainment })}
@@ -68,7 +74,7 @@ export default function CustomisationsPage() {
             </p>
           </div>
 
-          {/* Continue */}
+          {/* Continue Button */}
           <button
             className="mt-6 bg-[#0A4A45] hover:bg-[#083a36] text-white py-4 text-lg rounded-full transition-all"
             onClick={() => router.push("/plan/review")}

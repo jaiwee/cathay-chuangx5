@@ -37,12 +37,14 @@ export default function PurposePage() {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col">
+    <div className="min-h-screen w-full flex flex-col px-20 py-8">
       {/* Top Progress Bar */}
-      <ProgressBar currentStep={1} />
+      <div className="mb-8">
+        <ProgressBar currentStep={1} />
+      </div>
 
       {/* Main layout */}
-      <div className="grid grid-cols-2 gap-10 px-16 py-12">
+      <div className="grid grid-cols-2 gap-10 px-8 py-8">
         {/* LEFT SIDE */}
         <div className="flex flex-col justify-start pt-10">
           <h1 className="text-[36px] font-semibold text-gray-900">
@@ -61,13 +63,11 @@ export default function PurposePage() {
               <div
                 key={t.id}
                 onClick={() => update({ theme: t.id })}
-                className={`w-full border rounded-2xl p-5 cursor-pointer transition-all
-                  ${
-                    selected
-                      ? "border-[#0A4A45] bg-[#F4FAF9] shadow-sm"
-                      : "border-gray-300"
-                  }
-                `}
+                className={`w-full border rounded-2xl p-5 cursor-pointer transition-all ${
+                  selected
+                    ? "border-[#0A4A45] bg-[#F4FAF9] shadow-sm"
+                    : "border-gray-300"
+                }`}
               >
                 <h3 className="text-lg font-semibold">{t.title}</h3>
                 <p className="text-sm text-gray-600 mt-1">{t.desc}</p>
