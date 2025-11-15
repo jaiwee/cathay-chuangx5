@@ -78,7 +78,6 @@ export function AiChat({
           {heading}
         </h2>
       </div>
-
       <ScrollArea className="flex-1 min-h-0">
         <div className="space-y-5 pr-2">
           {messages.map((m) => (
