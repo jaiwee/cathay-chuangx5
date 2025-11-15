@@ -1,8 +1,35 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Tech Stack
+
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first styling
+- **Shadcn UI** - Beautiful, accessible UI components
+- **Supabase** - Backend as a Service (Database, Auth, Storage)
+
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Set Up Environment Variables
+
+Copy the `.env.example` file to `.env.local` and fill in your Supabase credentials:
+
+```bash
+cp .env.example .env.local
+```
+
+Get your Supabase URL and Anon Key from your [Supabase Dashboard](https://app.supabase.com):
+1. Go to your project settings
+2. Navigate to API section
+3. Copy the `URL` and `anon/public` key
+
+### 3. Run the Development Server
 
 ```bash
 npm run dev
