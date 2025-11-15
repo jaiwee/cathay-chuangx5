@@ -103,16 +103,16 @@ export function AiChat({
 
   return (
     <div
-      className={`flex flex-col rounded-lg border border-zinc-200 bg-white/70 backdrop-blur p-6 dark:border-zinc-800 dark:bg-zinc-900/60 ${className ?? ""}`}
+      className={`h-full flex flex-col rounded-lg border border-zinc-200 bg-white/70 backdrop-blur p-6 dark:border-zinc-800 dark:bg-zinc-900/60 overflow-hidden ${className ?? ""}`}
     >
-      <div className="mb-4 flex justify-center">
+      <div className="mb-4 flex justify-center flex-shrink-0">
         <h2 className="text-sm font-medium tracking-wide text-zinc-700 dark:text-zinc-200">
           {heading}
         </h2>
       </div>
-      <Separator className="mb-4" />
+      <Separator className="mb-4 flex-shrink-0" />
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="space-y-5 pr-2">
           {messages.map((m) => (
             <ChatLine key={m.id} message={m} />
@@ -134,7 +134,7 @@ export function AiChat({
 
       <form
         onSubmit={handleSubmit}
-        className="mt-6 relative flex items-center"
+        className="mt-6 relative flex items-center flex-shrink-0"
       >
         <Input
           value={input}
