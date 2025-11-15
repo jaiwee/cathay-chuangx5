@@ -25,9 +25,9 @@ export default function CustomisationsPage() {
 
           {/* Entertainment */}
           <div
-            onClick={() => update({ entertainment: !form.entertainment })}
+            onClick={() => update({ hasEntertainment: !form.hasEntertainment })}
             className={`cursor-pointer border rounded-2xl p-5 transition-all ${
-              form.entertainment
+              form.hasEntertainment
                 ? "border-[#0A4A45] bg-[#F4FAF9]"
                 : "border-gray-300"
             }`}
@@ -40,9 +40,9 @@ export default function CustomisationsPage() {
 
           {/* Merchandise */}
           <div
-            onClick={() => update({ merch: !form.merch })}
+            onClick={() => update({ hasMerch: !form.hasMerch })}
             className={`cursor-pointer border rounded-2xl p-5 transition-all ${
-              form.merch
+              form.hasMerch
                 ? "border-[#0A4A45] bg-[#F4FAF9]"
                 : "border-gray-300"
             }`}
@@ -55,9 +55,9 @@ export default function CustomisationsPage() {
 
           {/* Culinary */}
           <div
-            onClick={() => update({ culinary: !form.culinary })}
+            onClick={() => update({ hasCulinary: !form.hasCulinary })}
             className={`cursor-pointer border rounded-2xl p-5 transition-all ${
-              form.culinary
+              form.hasCulinary
                 ? "border-[#0A4A45] bg-[#F4FAF9]"
                 : "border-gray-300"
             }`}

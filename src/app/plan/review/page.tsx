@@ -61,9 +61,9 @@ export default function ReviewPage() {
 
             <hr className="my-2" />
 
-            <p><strong>Entertainment:</strong> {form.entertainment ? "Yes" : "No"}</p>
-            <p><strong>Merchandise:</strong> {form.merch ? "Yes" : "No"}</p>
-            <p><strong>Culinary Experience:</strong> {form.culinary ? "Yes" : "No"}</p>
+            <p><strong>Entertainment:</strong> {form.hasEntertainment ? "Yes" : "No"}</p>
+            <p><strong>Merchandise:</strong> {form.hasMerch ? "Yes" : "No"}</p>
+            <p><strong>Culinary Experience:</strong> {form.hasCulinary ? "Yes" : "No"}</p>
           </div>
         </div>
 

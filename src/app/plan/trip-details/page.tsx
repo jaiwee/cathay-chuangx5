@@ -69,7 +69,6 @@ export default function TripDetailsPage() {
               <option value="Morning">Morning</option>
               <option value="Afternoon">Afternoon</option>
               <option value="Evening">Evening</option>
-              <option value="Overnight">Overnight</option>
             </select>
           </div>
 
