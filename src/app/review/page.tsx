@@ -15,20 +15,18 @@ export default function ReviewPage() {
   async function handleSubmit() {
     const res = await fetch("/api/plan", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
 
-    if (res.ok) {
-      toast.success("Your flight event plan has been submitted!", {
-        position: "bottom-center",
-      });
-      reset();
-      router.push("/proposal");
-    } else {
-      toast.error("Submission failed. Please try again.", {
-        position: "bottom-center",
-      });
+    if (!res.ok) {
+      // handle error UI here
+      return;
     }
+
+    const data = await res.json(); // expects { id }
+    // Redirect to proposal page; proposal page will kick off AI pipeline and show loader
+    router.push(`/proposal`);
   }
 
   return (
