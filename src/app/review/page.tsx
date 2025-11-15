@@ -20,10 +20,10 @@ export default function ReviewPage() {
 
     if (res.ok) {
       toast.success("Your flight event plan has been submitted!", {
-        position: "bottom-center", // Toast appears below the "Review Your Plan" section
+        position: "bottom-center",
       });
       reset();
-      router.push("/"); // Redirect home or wherever you want
+      router.push("/proposal");
     } else {
       toast.error("Submission failed. Please try again.", {
         position: "bottom-center",
@@ -32,16 +32,16 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col px-20 py-12">
+    <div className="h-screen w-full flex flex-col px-20 py-8 overflow-hidden">
       {/* Top Progress Bar */}
-      <div className="mb-8">
+      <div className="mb-8 flex-shrink-0">
         <ProgressBar currentStep={5} />
       </div>
 
-      {/* Main layout */}
-      <div className="grid grid-cols-2 gap-10 px-8 py-8">
+      {/* Main layout - takes remaining space */}
+      <div className="flex-1 grid grid-cols-2 gap-10 px-8 overflow-hidden">
         {/* LEFT SIDE */}
-        <div className="flex flex-col justify-start pt-10">
+        <div className="flex flex-col justify-center">
           <h1 className="text-[32px] font-semibold text-gray-900">
             Review Your Plan
           </h1>
@@ -90,11 +90,12 @@ export default function ReviewPage() {
           )}
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="flex flex-col gap-6">
-          {/* Event Summary */}
-          <div className="border rounded-2xl p-6 bg-gray-50 text-gray-800">
-            <h2 className="text-xl font-semibold mb-4">Event Summary</h2>
+        {/* RIGHT SIDE - Scrollable Event Summary */}
+        <div className="flex flex-col overflow-hidden">
+          <div className="border rounded-2xl p-6 bg-gray-50 text-gray-800 overflow-y-auto">
+            <h2 className="text-xl font-semibold mb-4 sticky top-0 bg-gray-50 pb-2">
+              Event Summary
+            </h2>
 
             <div className="flex flex-col gap-3 text-sm">
               <p><strong>Purpose:</strong> {form.theme || "—"}</p>

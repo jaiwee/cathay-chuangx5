@@ -1,55 +1,68 @@
-import Image from "next/image";
-import { SupabaseExample } from "@/components/supabase-example";
+"use client";
 
-export default function Home() {
+import { usePlanForm } from "@/hooks/usePlanForm";
+import { useRouter } from "next/navigation";
+import { ProgressBar } from "@/components/ui/progress-bar";
+
+export default function PurposePage() {
+  const router = useRouter();
+  const { form, update } = usePlanForm();
+
+  const themes = [
+    { id: "Sports",   title: "Sports & Competition Events 🏅", desc: "For athletes, teams, and fan experiences" },
+    { id: "Music",    title: "Entertainment & Concerts 🎤",   desc: "For tours, festivals, and concerts" },
+    { id: "Media",    title: "Media & Publicity 📸",          desc: "For promotional campaigns" },
+    { id: "Corporate",title: "Corporate 💼",                  desc: "For professional, incentive, and executive trips" },
+    { id: "Others",   title: "Others 🌟",                     desc: "For Tourism, Educational, Private Celebrations" },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Next.js + Supabase + Shadcn UI
+    // Use svh to avoid mobile browser UI cutting content
+    <div className="h-[100svh] w-full flex flex-col px-12 py-6 overflow-hidden">
+      {/* Top Progress Bar */}
+      <div className="mb-6 flex-shrink-0">
+        <ProgressBar currentStep={1} />
+      </div>
+
+      {/* Main layout */}
+      <div className="flex-1 min-h-0 grid grid-cols-2 gap-6 px-6 overflow-hidden">
+        {/* LEFT SIDE */}
+        <div className="flex flex-col justify-center">
+          <h1 className="text-[36px] font-semibold text-gray-900">
+            What's the purpose?
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Your project is ready! This starter includes Next.js 14 with TypeScript, 
-            Supabase for backend services, and Shadcn UI for beautiful components.
+          <p className="mt-4 text-gray-600 text-lg leading-relaxed max-w-md">
+            Let's get started by selecting what type of event you wish to plan.
           </p>
-          <SupabaseExample />
-          <div className="w-full">
-            <h2 className="text-xl font-semibold mb-2 text-black dark:text-zinc-50">Next Steps:</h2>
-            <ul className="list-disc list-inside text-zinc-600 dark:text-zinc-400 space-y-1">
-              <li>Configure your Supabase credentials in <code className="text-sm bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">.env.local</code></li>
-              <li>Install Shadcn components: <code className="text-sm bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">npx shadcn@latest add button</code></li>
-              <li>Start building your application!</li>
-            </ul>
-          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://supabase.com/docs"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* RIGHT SIDE */}
+        <div className="flex flex-col justify-center gap-3 overflow-y-auto pr-2">
+          {themes.map((t) => {
+            const selected = form.theme === t.id;
+            return (
+              <div
+                key={t.id}
+                onClick={() => update({ theme: t.id })}
+                className={`w-full border rounded-2xl p-4 md:p-5 cursor-pointer transition-all ${
+                  selected ? "border-[#0A4A45] bg-[#F4FAF9] shadow-sm" : "border-gray-300"
+                }`}
+              >
+                <h3 className="text-[clamp(14px,2vh,18px)] font-semibold">{t.title}</h3>
+                <p className="text-[clamp(12px,1.8vh,14px)] text-gray-600 mt-1">{t.desc}</p>
+              </div>
+            );
+          })}
+
+          {/* Continue Button */}
+          <button
+            className="mt-4 bg-[#0A4A45] hover:bg-[#083a36] text-white py-3 text-[clamp(14px,2vh,16px)] rounded-full transition-all flex-shrink-0"
+            onClick={() => router.push("/event-details")}
           >
-            Supabase Docs
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://ui.shadcn.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Shadcn UI
-          </a>
+            Continue
+          </button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
