@@ -67,11 +67,11 @@ export async function getHotelRecommendations(
       (hotel, index) =>
         `${index + 1}. Name: ${hotel.name}, Address: ${hotel.address}, City: ${
           hotel.city
-        }, Country: ${hotel.country}, Rating: ${hotel.rating}, Price: $${(
-          hotel.price_per_nigh / 100
-        ).toFixed(2)}/night, Amenities: ${hotel.amenities.join(
-          ", "
-        )}, Booking URL: ${hotel.booking_url}`
+        }, Country: ${hotel.country}, Rating: ${hotel.rating}, Price: $${
+          hotel.price_per_night
+        } per night, Amenities: ${hotel.amenities.join(", ")}, Booking URL: ${
+          hotel.booking_url
+        }`
     )
     .join("\n");
 
@@ -97,18 +97,18 @@ ${hotelsListString}
 
 Based on this information, select EXACTLY 3 hotels from the available list above that best match the criteria. Consider:
 1. Proximity to ${holisticData.event_location.address} - calculate the distance_to_ev in meters based on the hotel address and event venue address
-2. Quality and rating (aim for highly-rated hotels, 4.0-5.0)
+2. Quality and rating (aim for highly-rated hotels, 9.0-10.0)
 3. Appropriate for ${holisticData.theme} event attendees
 4. Suitable amenities for a group of ${holisticData.group_size}
 5. Price appropriateness for the event theme
 
-IMPORTANT: You MUST select hotels from the available list above. Use the EXACT values from the list (name, address, city, country, rating, booking_url, price_per_nigh, amenities). 
+IMPORTANT: You MUST select hotels from the available list above. Use the EXACT values from the list (name, address, city, country, rating, booking_url, price_per_night, amenities). 
 
 For each selected hotel, you MUST also calculate:
 - distance_to_ev: Calculate the distance in meters from the hotel address to the event venue address (${holisticData.event_location.address}). Provide a realistic estimate based on the addresses.
 
 IMPORTANT CONSTRAINTS:
-- rating: Must be a number between 0.0 and 5.0 (inclusive). Use the exact rating from the available list.
+- rating: Must be a number between 0.0 and 10.0 (inclusive). Use the exact rating from the available list.
 - booking_url: Must be a valid URL string. Use the exact booking_url from the available list. If the booking_url from the list is null or empty, use "https://example.com/booking" as a placeholder.
 
 Respond ONLY with valid JSON array with EXACTLY 3 hotel objects in this exact format (no markdown, no code blocks, no extra text):
@@ -119,9 +119,9 @@ Respond ONLY with valid JSON array with EXACTLY 3 hotel objects in this exact fo
     "city": "Exact city from available list",
     "country": "Exact country from available list",
     "distance_to_ev": 1500,
-    "rating": 4.5,
+    "rating": 9.5,
     "booking_url": "Exact booking_url from available list",
-    "price_per_nigh": 15000,
+    "price_per_night": 1500,
     "amenities": ["Exact", "amenities", "array", "from", "available", "list"]
   },
   {
@@ -130,9 +130,9 @@ Respond ONLY with valid JSON array with EXACTLY 3 hotel objects in this exact fo
     "city": "Second hotel city from available list",
     "country": "Second hotel country from available list",
     "distance_to_ev": 2500,
-    "rating": 4.3,
+    "rating": 9.3,
     "booking_url": "Second hotel booking_url from available list",
-    "price_per_nigh": 25000,
+    "price_per_night": 2500,
     "amenities": ["Second", "hotel", "amenities", "array"]
   },
   {
@@ -141,15 +141,15 @@ Respond ONLY with valid JSON array with EXACTLY 3 hotel objects in this exact fo
     "city": "Third hotel city from available list",
     "country": "Third hotel country from available list",
     "distance_to_ev": 3200,
-    "rating": 4.0,
+    "rating": 9.0,
     "booking_url": "Third hotel booking_url from available list",
-    "price_per_nigh": 8000,
+    "price_per_night": 800,
     "amenities": ["Third", "hotel", "amenities", "array"]
   }
 ]
 
 CRITICAL: 
-- Use the EXACT values from the available hotels list above for: name, address, city, country, rating, booking_url, price_per_nigh, amenities
+- Use the EXACT values from the available hotels list above for: name, address, city, country, rating, booking_url, price_per_night, amenities. Do not divide the price_per_night value by 100.
 - CALCULATE distance_to_ev: Estimate the distance in meters from the hotel address to the event venue (${holisticData.event_location.address})
 - Select the 3 best hotels from the list based on the criteria
 `;
@@ -192,8 +192,8 @@ CRITICAL:
       // Pre-process hotel data to fix common issues
       const processedHotel = {
         ...hotel,
-        // Ensure rating is within valid range (0-5)
-        rating: Math.max(0, Math.min(5, Number(hotel.rating) || 0)),
+        // Ensure rating is within valid range (0-10)
+        rating: Math.max(0, Math.min(10, Number(hotel.rating) || 0)),
         // Ensure booking_url is a valid string (not null)
         booking_url: hotel.booking_url || "https://example.com/booking",
         // Ensure distance_to_ev is a non-negative integer
@@ -201,10 +201,10 @@ CRITICAL:
           0,
           Math.floor(Number(hotel.distance_to_ev) || 0)
         ),
-        // Ensure price_per_nigh is a non-negative integer
-        price_per_nigh: Math.max(
+        // Ensure price_per_night is a non-negative integer (in dollars)
+        price_per_night: Math.max(
           0,
-          Math.floor(Number(hotel.price_per_nigh) || 0)
+          Math.floor(Number(hotel.price_per_night) || 0)
         ),
       };
 

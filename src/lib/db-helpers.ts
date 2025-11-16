@@ -63,6 +63,9 @@ export async function getFormById(formId: number) {
 export async function getFlightIdByFlightCode(
   flightCode: string
 ): Promise<string | null> {
+  console.log(
+    `[db-helpers] getFlightIdByFlightCode called with flight_code: ${flightCode}`
+  );
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
@@ -71,16 +74,33 @@ export async function getFlightIdByFlightCode(
     .eq("flight_code", flightCode)
     .single();
 
+  console.log(`[db-helpers] Flight lookup query result:`, {
+    flight_code: flightCode,
+    data: data,
+    error: error,
+    errorCode: error?.code,
+  });
+
   if (error) {
     // If no flight found, return null instead of throwing
     if (error.code === "PGRST116") {
+      console.log(
+        `[db-helpers] No flight found with flight_code: ${flightCode} (PGRST116)`
+      );
       return null;
     }
-    console.error("Error fetching flight by flight code from Supabase:", error);
+    console.error(
+      "[db-helpers] Error fetching flight by flight code from Supabase:",
+      error
+    );
     throw new Error(`Failed to fetch flight: ${error.message}`);
   }
 
-  return data?.id || null;
+  const flightId = data?.id || null;
+  console.log(
+    `[db-helpers] Returning flight_id: ${flightId} for flight_code: ${flightCode}`
+  );
+  return flightId;
 }
 
 // Update form with flight_id
@@ -88,16 +108,41 @@ export async function updateFormWithFlightId(
   formId: number,
   flightId: string
 ): Promise<void> {
+  console.log(`[db-helpers] updateFormWithFlightId called:`, {
+    formId: formId,
+    flightId: flightId,
+    formIdType: typeof formId,
+    flightIdType: typeof flightId,
+  });
   const supabase = getSupabaseClient();
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("form")
     .update({ flight_id: flightId })
-    .eq("id", formId);
+    .eq("id", formId)
+    .select();
+
+  console.log(`[db-helpers] Form update query result:`, {
+    formId: formId,
+    flightId: flightId,
+    data: data,
+    error: error,
+    rowsAffected: data?.length || 0,
+  });
 
   if (error) {
-    console.error("Error updating form with flight_id:", error);
+    console.error("[db-helpers] Error updating form with flight_id:", error);
     throw new Error(`Failed to update form: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    console.warn(
+      `[db-helpers] No rows updated. Form with id ${formId} may not exist.`
+    );
+  } else {
+    console.log(
+      `[db-helpers] Successfully updated form ${formId} with flight_id ${flightId}`
+    );
   }
 }
 

@@ -75,15 +75,13 @@ export const HotelRecommendationSchema = z.object({
     .int()
     .nonnegative()
     .describe("Distance to event venue in meters (int4)"),
-  rating: z.number().min(0).max(5).describe("Hotel rating out of 5 (float4)"),
+  rating: z.number().min(0).max(10).describe("Hotel rating out of 10 (float4)"),
   booking_url: z.string().url().describe("Booking URL for the hotel"),
-  price_per_nigh: z
+  price_per_night: z
     .number()
     .int()
     .nonnegative()
-    .describe(
-      "Price per night in smallest currency unit (e.g., cents for USD) (int4)"
-    ),
+    .describe("Price per night in dollars (int4)"),
   amenities: z
     .array(z.string())
     .describe("Array of amenity names (stored as JSON)"),
@@ -100,13 +98,14 @@ export interface HotelDB {
   country: string;
   rating: number; // float4
   booking_url: string;
-  price_per_nigh: number; // int4
+  price_per_night: number; // int4 - price in dollars
   amenities: string[]; // JSON array
   // Note: distance_to_ev and price_band are calculated by AI, not stored in DB
 }
 
 // Car rental database schema (matches Supabase car_rental table)
 export interface CarRentalDB {
+  model_name: string;
   provider_name: string;
   service_type: string; // e.g., "sedan", "suv", "van"
   city: string;
@@ -118,6 +117,7 @@ export interface CarRentalDB {
 
 // Car model for LLM prompt (derived from DB data)
 export interface CarModel {
+  model_name: string;
   provider_name: string;
   service_type: string; // e.g., "sedan", "suv", "van"
   city: string;

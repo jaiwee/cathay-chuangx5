@@ -185,7 +185,7 @@ IMPORTANT:
 - Calculate times relative to the departure time
 - duration must be an integer representing minutes (e.g., 15, 30, 60, not "15 minutes")
 - Ensure activities don't overlap
-- The schedule should fill the entire flight duration appropriately
+- The schedule should fill the entire flight duration appropriately. The total duration of all activities should not exceeed the overall duration of the flight.
 - featured_cathay_items must be a single string (one item name from the available list) or null/omitted if no item is featured
 - At least one activity must have featured_cathay_items populated with one item name
 

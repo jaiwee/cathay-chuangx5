@@ -59,6 +59,7 @@ async function getAvailableCarRentals(
 
   // Map database records to CarModel format
   return data.map((car: CarRentalDB) => ({
+    model_name: car.model_name,
     provider_name: car.provider_name,
     service_type: car.service_type,
     city: car.city,
@@ -96,7 +97,7 @@ export async function getCarRentalRecommendation(
   const availableCarsString = availableCars
     .map(
       (car) =>
-        `- Provider: ${car.provider_name}, Type: ${
+        `- Model: ${car.model_name}, Provider: ${car.provider_name}, Type: ${
           car.service_type
         }, Location: ${car.city}, ${car.country}, Price: $${(
           car.price_per_day / 100
@@ -139,12 +140,12 @@ IMPORTANT: Respond ONLY with valid JSON in this exact format (no markdown, no co
 {
   "recommended_combination": [
     {
-      "model": "Provider Name (use provider_name from available cars)",
+      "model": "Model Name (use model_name from available cars)",
       "type": "service_type from available cars (sedan/suv/van)",
       "quantity": 2,
       "capacity": 5,
       "total_capacity": 10,
-      "price_per_day": "$XX"
+      "price_per_day": "$XX (use price_per_day)"
     }
   ],
   "total_cars": 2,

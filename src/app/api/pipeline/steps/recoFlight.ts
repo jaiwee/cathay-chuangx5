@@ -98,6 +98,16 @@ export async function getFlightRecommendation(
     );
   }
 
+  console.log(
+    `[recoFlight] Found ${availableFlights.length} available flights:`,
+    availableFlights.map((f) => ({
+      id: f.id,
+      flight_code: f.flight_code,
+      origin_airport: f.origin_airport,
+      destination_airport: f.destination_airport,
+    }))
+  );
+
   // Format flights for the LLM prompt
   const flightsListString = availableFlights
     .map(
@@ -179,19 +189,43 @@ CRITICAL: Use the EXACT values from the available flights list above. If flight_
   // Validate the response against our schema
   const validatedFlight = FlightRecommendationSchema.parse(parsedResponse);
 
+  console.log("[recoFlight] Validated flight recommendation:", {
+    flight_code: validatedFlight.flight_code,
+    origin_country: validatedFlight.origin_country,
+    destination_country: validatedFlight.destination_country,
+    formId: holisticData.formId,
+  });
+
   // Populate form with flight_id
   if (validatedFlight.flight_code) {
+    console.log(
+      `[recoFlight] Looking up flight_id for flight_code: ${validatedFlight.flight_code}`
+    );
     const flightId = await getFlightIdByFlightCode(validatedFlight.flight_code);
+    console.log(`[recoFlight] Flight lookup result:`, {
+      flight_code: validatedFlight.flight_code,
+      flightId: flightId,
+      found: !!flightId,
+    });
+
     if (flightId) {
+      console.log(
+        `[recoFlight] Updating form ${holisticData.formId} with flight_id: ${flightId}`
+      );
       await updateFormWithFlightId(holisticData.formId, flightId);
       console.log(
-        `Updated form ${holisticData.formId} with flight_id: ${flightId}`
+        `[recoFlight] Successfully updated form ${holisticData.formId} with flight_id: ${flightId}`
       );
     } else {
       console.warn(
-        `Flight with flight_code ${validatedFlight.flight_code} not found in database`
+        `[recoFlight] Flight with flight_code ${validatedFlight.flight_code} not found in database. Cannot update form.`
       );
     }
+  } else {
+    console.warn(
+      `[recoFlight] No flight_code in validated flight recommendation. Cannot update form with flight_id.`,
+      { validatedFlight }
+    );
   }
 
   return validatedFlight;

@@ -42,12 +42,25 @@ function normalizeTheme(theme?: string): "sports" | "music" | "corporate" {
 }
 
 // Helper to normalize flight timing preference to lowercase
-function normalizeFlightTiming(pref?: string): "morning" | "afternoon" | "evening" | undefined {
-  const lower = (pref || "").toLowerCase();
-  if (lower === "morning") return "morning";
-  if (lower === "afternoon") return "afternoon";
-  if (lower === "evening") return "evening";
-  return undefined;
+function normalizeFlightTiming(
+  pref?: string
+): "morning" | "afternoon" | "evening" {
+  const lower = (pref || "").toLowerCase().trim();
+  if (lower === "morning" || lower.includes("morn")) return "morning";
+  if (
+    lower === "afternoon" ||
+    lower.includes("afternoon") ||
+    lower.includes("after")
+  )
+    return "afternoon";
+  if (
+    lower === "evening" ||
+    lower.includes("evening") ||
+    lower.includes("even")
+  )
+    return "evening";
+  // Default to morning if no match
+  return "morning";
 }
 
 export default function ProposalFormPage() {
@@ -73,14 +86,15 @@ export default function ProposalFormPage() {
   useEffect(() => {
     const loadAnimations = async () => {
       try {
-        const [airplane, food, hotel, transport, entertainment, wine] = await Promise.all([
-          fetch("/animations/Flight.json").then((r) => r.json()),
-          fetch("/animations/Food.json").then((r) => r.json()),
-          fetch("/animations/Home.json").then((r) => r.json()),
-          fetch("/animations/Car.json").then((r) => r.json()),
-          fetch("/animations/Popcorn.json").then((r) => r.json()),
-          fetch("/animations/Wine.json").then((r) => r.json()),
-        ]);
+        const [airplane, food, hotel, transport, entertainment, wine] =
+          await Promise.all([
+            fetch("/animations/Flight.json").then((r) => r.json()),
+            fetch("/animations/Food.json").then((r) => r.json()),
+            fetch("/animations/Home.json").then((r) => r.json()),
+            fetch("/animations/Car.json").then((r) => r.json()),
+            fetch("/animations/Popcorn.json").then((r) => r.json()),
+            fetch("/animations/Wine.json").then((r) => r.json()),
+          ]);
         setAnims({ airplane, food, hotel, transport, entertainment, wine });
       } catch (e) {
         console.error("Failed to load animations from /public:", e);
@@ -103,6 +117,13 @@ export default function ProposalFormPage() {
   // Cycle animations only after they are loaded
   useEffect(() => {
     if (!stages.length) return;
+    // Ensure stage is within bounds when stages change
+    setStage((currentStage) => {
+      if (currentStage >= stages.length) {
+        return 0;
+      }
+      return currentStage;
+    });
     const animId = setInterval(() => {
       setStage((s) => (s + 1) % stages.length);
     }, 5000);
@@ -120,7 +141,7 @@ export default function ProposalFormPage() {
       try {
         // Check if planId is a valid number for formId lookup
         const isNumericId = !!planId && /^\d+$/.test(planId);
-        
+
         let payload;
         if (isNumericId) {
           // Send formId if it's numeric
@@ -148,14 +169,26 @@ export default function ProposalFormPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        
+
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(JSON.stringify(errorData, null, 2));
         }
-        
+
         const data = await res.json();
         setPipeline(data);
+
+        // Store pipeline output in localStorage for smart-recommendation page
+        if (data.output) {
+          localStorage.setItem(
+            "pipelineRecommendations",
+            JSON.stringify(data.output)
+          );
+          console.log(
+            "Stored pipeline recommendations in localStorage:",
+            data.output
+          );
+        }
       } catch (e: any) {
         console.error("Pipeline error:", e);
         setError(e?.message ?? "Failed to generate proposal");
@@ -171,34 +204,43 @@ export default function ProposalFormPage() {
     return (
       <div className="h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48">
-            {stages.map((s, i) => (
-              <div
-                key={i}
-                className={`absolute inset-0 transition-opacity duration-700 ${i === stage ? "opacity-100" : "opacity-0"}`}
-              >
-                <Lottie animationData={s.data} loop autoplay />
-              </div>
-            ))}
-          </div>
+          {stages.length > 0 && (
+            <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48">
+              {stages.map((s, i) => (
+                <div
+                  key={i}
+                  className={`absolute inset-0 transition-opacity duration-700 ${
+                    i === stage ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <Lottie animationData={s.data} loop autoplay />
+                </div>
+              ))}
+            </div>
+          )}
           <div className="text-center">
             <h2 className="text-xl md:text-2xl text-zinc-900 dark:text-zinc-100">
               Generating Your Proposal
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-400">
-              {stages[stage].label}
+              {stages[stage]?.label ||
+                "Preparing your personalized experience..."}
             </p>
           </div>
-          <div className="flex gap-2">
-            {stages.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-500 ${
-                  i === stage ? "w-6 bg-[#014A43] dark:bg-zinc-400" : "w-1.5 bg-zinc-300 dark:bg-zinc-700"
-                }`}
-              />
-            ))}
-          </div>
+          {stages.length > 0 && (
+            <div className="flex gap-2">
+              {stages.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    i === stage
+                      ? "w-6 bg-[#014A43] dark:bg-zinc-400"
+                      : "w-1.5 bg-zinc-300 dark:bg-zinc-700"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -208,7 +250,9 @@ export default function ProposalFormPage() {
     return (
       <div className="h-screen flex items-center justify-center text-center px-6">
         <div className="max-w-2xl">
-          <h2 className="text-xl font-semibold text-red-600">Failed to generate proposal</h2>
+          <h2 className="text-xl font-semibold text-red-600">
+            Failed to generate proposal
+          </h2>
           <pre className="mt-2 text-xs text-left text-zinc-600 bg-zinc-100 p-4 rounded overflow-auto max-h-96">
             {error}
           </pre>
@@ -228,11 +272,11 @@ export default function ProposalFormPage() {
       <div className="h-full mx-auto max-w-6xl p-6 md:p-10">
         <div className="h-full grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="h-full flex flex-col rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
-            <ProposalForm/>
+            <ProposalForm />
           </div>
           <div className="h-full flex flex-col rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
             <div className="flex-1 min-h-0">
-              <AiChat className="h-full"/>
+              <AiChat className="h-full" />
             </div>
           </div>
         </div>
